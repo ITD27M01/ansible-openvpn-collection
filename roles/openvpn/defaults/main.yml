@@ -1,0 +1,5 @@
+---
+openvpn_internal_gateway: "{{ ansible_default_ipv4['address'] }}"
+session_timeout: 300
+
+ovpn_dev: 'tun0'

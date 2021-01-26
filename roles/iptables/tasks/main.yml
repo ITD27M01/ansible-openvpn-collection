@@ -1,0 +1,16 @@
+---
+- name: Install iptables-services  package
+  yum:
+    name: iptables-services
+    state: present
+
+- name: Create iptables rules for OpenVPN server
+  template: src=iptables.j2 dest="/etc/sysconfig/iptables"
+  notify:
+    - Restart iptables service
+
+- name: Enable iptables service
+  service:
+    name: iptables
+    enabled: yes
+    state: started

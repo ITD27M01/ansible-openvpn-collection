@@ -1,0 +1,6 @@
+---
+- name: Restart iptables service
+  service:
+    name: iptables
+    enabled: yes
+    state: restarted

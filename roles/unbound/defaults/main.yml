@@ -1,0 +1,4 @@
+---
+unbound_log_level: 2
+
+unbound_allowed_access: "{{ ovpn_subnet + '.0/24' }}"

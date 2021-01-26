@@ -1,0 +1,11 @@
+---
+galaxy_info:
+  author: Igor Tiunov
+  description: Ansible role to configure ubnound DNS server
+  company: IAS
+
+  license: MIT
+
+  min_ansible_version: 2.10
+
+dependencies: []

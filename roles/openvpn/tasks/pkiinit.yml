@@ -1,0 +1,28 @@
+---
+- name: PKI Initialization
+  file: path="{{ item }}" owner=root group=root mode=0750 state=directory
+  with_items:
+  - "{{ pki_folder }}"
+  - "{{ pki_private_folder }}"
+
+- name: Get Public Certs
+  copy:
+    content: "{{ lookup('itd27m01.oci.oci_secret', compartment + '.' + item, compartment_id=secret_compartment_id, vault_id=secret_vault_id) }}"
+    dest: "{{ pki_folder }}/{{ item }}"
+    mode: 0640
+  with_items:
+  - "{{ ca_cert }}"
+  - "{{ server_cert }}"
+  notify:
+    - Restart OpenVPN service
+
+- name: Get Private Keys
+  copy:
+    content: "{{ lookup('itd27m01.oci.oci_secret', compartment + '.' + item, compartment_id=secret_compartment_id, vault_id=secret_vault_id) }}"
+    dest: "{{ pki_private_folder }}/{{ item }}"
+    mode: 0600
+  with_items:
+  - "{{ ca_key }}"
+  - "{{ server_key }}"
+  notify:
+  - Restart OpenVPN service

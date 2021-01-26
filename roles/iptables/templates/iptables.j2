@@ -1,0 +1,27 @@
+# Managed by Ansible
+## NAT table rules
+*nat
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+-A POSTROUTING -s {{ ovpn_subnet }}.0/24 -o {{ ansible_default_ipv4['interface'] }} -m comment --comment "NAT rule for vpn clients" -j MASQUERADE
+COMMIT
+# Filter table rules
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+
+-A INPUT -p tcp -m conntrack --ctstate INVALID,NEW -m tcp --tcp-flags SYN,ACK SYN,ACK -j REJECT --reject-with tcp-reset
+-A INPUT -p tcp -m conntrack --ctstate NEW -m tcp --sport 0:1023 -j DROP
+-A INPUT -p icmp -m icmp --icmp-type echo-request -j ACCEPT
+-A INPUT -i lo -j ACCEPT
+-A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -s {{ ovpn_subnet }}.0/24 -i {{ ovpn_dev }} -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+-A INPUT -p udp -m udp --dport 1194 -m conntrack --ctstate NEW -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 22 -m conntrack --ctstate NEW -j ACCEPT
+
+-A INPUT -p tcp -m tcp -j REJECT --reject-with tcp-reset
+-A INPUT -j REJECT --reject-with icmp-host-unreachable
+COMMIT

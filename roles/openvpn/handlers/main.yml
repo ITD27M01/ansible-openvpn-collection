@@ -1,0 +1,6 @@
+---
+- name: Restart OpenVPN service
+  service:
+    name: openvpn@openvpn-{{ ovpn_dev }}
+    enabled: yes
+    state: restarted

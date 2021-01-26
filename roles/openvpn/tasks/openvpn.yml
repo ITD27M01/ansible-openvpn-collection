@@ -1,0 +1,51 @@
+---
+- name: Configures sysctl properties
+  sysctl:
+    name: "{{ item }}"
+    value: '1'
+    sysctl_file: "/etc/sysctl.d/{{ item }}.conf"
+    reload: yes
+  with_items:
+    - "net.ipv4.conf.all.forwarding"
+    - "net.ipv4.conf.default.forwarding"
+    - "net.ipv4.ip_forward"
+
+- name: Install OpenVPN package
+  yum:
+    name: openvpn
+    state: present
+    enablerepo: ol7_developer_EPEL
+  register: install_status
+
+- name: Check if opnevpn config folder exist
+  file: path="{{ ovpn_conf }}" owner=root group=root mode=0750 state=directory
+  register: ovpnconf_status
+  when: install_status.changed
+
+- name: Generate OpenVPN Config
+  template: src=openvpn.conf.j2 dest="{{ ovpn_conf }}/openvpn-{{ ovpn_dev }}.conf"
+  register: config_status
+  notify:
+  - Restart OpenVPN service
+
+- name: Generate ta.key
+  command:
+    cmd: "/usr/sbin/openvpn --genkey --secret {{ takey_location }}"
+    creates: "{{ takey_location }}"
+  notify:
+    - Restart OpenVPN service
+
+- name: Store ta.key file
+  slurp:
+    src: "{{ takey_location }}"
+  register: ta_key
+
+- name: Check that logsdir exist
+  file: path="{{ ovpn_logs }}" owner=root group=root mode=0750 state=directory
+  when: config_status.changed
+
+- name: Ensure OpenVPN service
+  service:
+    name: openvpn@openvpn-{{ ovpn_dev }}
+    enabled: yes
+    state: started

@@ -1,0 +1,24 @@
+---
+ovpn_proto: "udp"
+ovpn_port: "1194"
+ovpn_subnet: "192.168.254"
+ovpn_conf: "/etc/openvpn"
+ovpn_logs: "/var/log/openvpn-{{ ovpn_dev }}"
+
+pki_folder: /etc/pki/openvpn
+pki_private_folder: "{{ pki_folder }}/private"
+
+ca_cert: ca.pem
+ca_key: ca-key.pem
+server_cert: server.pem
+server_key: server-key.pem
+ta_key: ta.key
+
+cacert_location: "{{ pki_folder }}/{{ ca_cert }}"
+cakey_location: "{{ pki_private_folder }}/{{ ca_key }}"
+gwcert_location: "{{ pki_folder }}/{{ server_cert }}"
+gwkey_location: "{{ pki_private_folder }}/{{ server_key }}"
+takey_location: "{{ pki_private_folder }}/{{ ta_key }}"
+
+cloud_network: '172.31.0.0'
+cloud_netmask: '255.255.0.0'
