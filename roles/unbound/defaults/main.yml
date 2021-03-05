@@ -2,3 +2,8 @@
 unbound_log_level: 2
 
 unbound_allowed_access: "{{ ovpn_subnet + '.0/24' }}"
+
+unbound_forward_zones:
+  - name: '.'
+    forward:
+      - 169.254.169.254
