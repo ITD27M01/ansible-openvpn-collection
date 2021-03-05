@@ -1,8 +1,10 @@
 # Main config to forward queries to OCI DNS servers
+{% for zone in unbound_forward_zones %}
 forward-zone:
-    name: "."
-{% for unbound_dns_forwarder in ansible_dns.nameservers %}
-    forward-addr: {{ unbound_dns_forwarder }}
+    name: "{{ zone.name }}"
+{% for forward in zone.forward %}
+    forward-addr: {{ forward }}
+{% endfor %}
 {% endfor %}
 
 server:
