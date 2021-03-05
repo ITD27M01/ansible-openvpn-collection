@@ -1,9 +1,17 @@
 ---
 - name: Install unboud package
   yum:
-    name: unbound
+    name:
+      - unbound
     state: latest
-    update_cache: yes
+  when: ansible_pkg_mgr is defined and ansible_pkg_mgr == "yum"
+
+- name: Install unboud package
+  dnf:
+    name:
+      - unbound
+    state: latest
+  when: ansible_pkg_mgr is defined and ansible_pkg_mgr == "dnf"
 
 - name: Configure unbound
   template:
